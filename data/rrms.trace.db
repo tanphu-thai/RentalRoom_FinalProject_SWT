@@ -1,0 +1,3 @@
+2026-06-27 01:00:02.246859+07:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]ELECT * FROM TENANT"; expected "EXPLAIN, EXECUTE"; SQL statement:
+ELECT * FROM TENANT [42001-232]
