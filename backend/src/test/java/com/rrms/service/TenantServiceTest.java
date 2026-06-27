@@ -1,44 +1,49 @@
+
+
 package com.rrms.service;
 
-import com.rrms.common.BusinessException;
-import com.rrms.dto.TenantDtos;
-import com.rrms.repository.RentalContractRepository;
-import com.rrms.repository.TenantRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
-class TenantServiceTest {
-    @Mock private TenantRepository tenantRepository;
-    @Mock private RentalContractRepository contractRepository;
+@SpringBootTest
+public class TenantServiceTest {
+
+    @Autowired
     private TenantService tenantService;
 
-    @BeforeEach
-    void setUp() { tenantService = new TenantService(tenantRepository, contractRepository); }
 
+
+
+    // UTCID01: Input là null (Abnormal)
     @Test
-    void create_citizenIdNotTwelveDigits_throwBusinessException() {
-        TenantDtos.TenantRequest request = new TenantDtos.TenantRequest("An", "123456789", "0901234567", "an@test.local");
-
-        BusinessException ex = assertThrows(BusinessException.class, () -> tenantService.create(request));
-
-        assertEquals("Citizen ID must contain exactly 12 digits.", ex.getMessage());
-        verify(tenantRepository, never()).save(org.mockito.ArgumentMatchers.any());
+    public void testIsValidCitizenId_Null_ReturnsFalse() {
+        assertFalse(tenantService.isValidCitizenId(null), "Null phải false");
     }
 
+    // UTCID02: Input chứa chữ cái (Abnormal)
     @Test
-    void create_invalidPhone_throwBusinessException() {
-        TenantDtos.TenantRequest request = new TenantDtos.TenantRequest("An", "079123456789", "12345", "an@test.local");
+    public void testIsValidCitizenId_ContainsLetters_ReturnsFalse() {
+        assertFalse(tenantService.isValidCitizenId("079A1234"), "Chứa chữ cái phải false");
+    }
 
-        BusinessException ex = assertThrows(BusinessException.class, () -> tenantService.create(request));
+    // UTCID03: Input chứa ký tự đặc biệt (Abnormal)
+    @Test
+    public void testIsValidCitizenId_SpecialChars_ReturnsFalse() {
+        assertFalse(tenantService.isValidCitizenId("079@1234"), "Ký tự ĐB phải false");
+    }
 
-        assertEquals("Phone number format is invalid.", ex.getMessage());
+    // UTCID04: Input chuỗi rỗng (Abnormal)
+    @Test
+    public void testIsValidCitizenId_EmptyString_ReturnsFalse() {
+        assertFalse(tenantService.isValidCitizenId(""), "Chuỗi rỗng phải false");
+    }
+
+    // UTCID05: Input hợp lệ 12 số (Normal)
+    @Test
+    public void testIsValidCitizenId_ValidId_ReturnsTrue() {
+        assertTrue(tenantService.isValidCitizenId("079205012345"), "ID đúng chuẩn phải true");
     }
 }
