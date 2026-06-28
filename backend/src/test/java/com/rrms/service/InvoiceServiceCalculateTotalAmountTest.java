@@ -94,6 +94,7 @@ class InvoiceServiceCalculateTotalAmountTest {
                 invoice,
                 bd("10000"),
                 bd("1000"),
+                
                 bd("3500"),
                 bd("15000"),
                 bd("0")
