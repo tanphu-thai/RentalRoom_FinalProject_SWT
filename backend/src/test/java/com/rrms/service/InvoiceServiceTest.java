@@ -1,70 +1,211 @@
 package com.rrms.service;
 
 import com.rrms.common.BusinessException;
+import com.rrms.domain.entity.Invoice;
 import com.rrms.domain.entity.RentalContract;
 import com.rrms.domain.entity.Room;
-import com.rrms.domain.enums.ContractStatus;
 import com.rrms.domain.enums.RoomStatus;
-import com.rrms.dto.InvoiceDtos;
 import com.rrms.repository.InvoiceRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.Clock;
-import java.util.Optional;
+import java.time.Instant;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class InvoiceServiceTest {
-    @Mock private InvoiceRepository invoiceRepository;
-    @Mock private ContractService contractService;
+
+    @Mock
+    private InvoiceRepository invoiceRepository;
+
+    @Mock
+    private ContractService contractService;
+
     private InvoiceService invoiceService;
 
     @BeforeEach
-    void setUp() { invoiceService = new InvoiceService(invoiceRepository, contractService, Clock.systemUTC()); }
-
-    @Test
-    void generate_validReadings_calculateTotalAndCreateUnpaidInvoice() {
-        RentalContract contract = activeContract();
-        when(contractService.getEntity(1L)).thenReturn(contract);
-        when(invoiceRepository.existsByContractIdAndBillingMonth(1L, "2026-06")).thenReturn(false);
-        when(invoiceRepository.findTopByContractIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.empty());
-        when(invoiceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-        InvoiceDtos.GenerateInvoiceRequest request = new InvoiceDtos.GenerateInvoiceRequest(1L, "2026-06",
-                new BigDecimal("120"), new BigDecimal("25"), new BigDecimal("3500"), new BigDecimal("15000"), new BigDecimal("150000"));
-
-        InvoiceDtos.InvoiceResponse response = invoiceService.generate(request);
-
-        // 2,500,000 + (20*3,500) + (5*15,000) + 150,000 = 2,795,000
-        assertEquals(new BigDecimal("2795000.00"), response.totalAmount());
-        assertEquals(com.rrms.domain.enums.InvoiceStatus.UNPAID, response.status());
+    void setUp() {
+        Clock fixedClock = Clock.fixed(Instant.parse("2026-06-18T00:00:00Z"), ZoneId.of("UTC"));
+        invoiceService = new InvoiceService(invoiceRepository, contractService, fixedClock);
     }
 
     @Test
-    void generate_currentElectricityLowerThanPrevious_throwBusinessException() {
-        RentalContract contract = activeContract();
-        when(contractService.getEntity(1L)).thenReturn(contract);
-        when(invoiceRepository.existsByContractIdAndBillingMonth(1L, "2026-06")).thenReturn(false);
-        when(invoiceRepository.findTopByContractIdOrderByCreatedAtDesc(1L)).thenReturn(Optional.empty());
-        InvoiceDtos.GenerateInvoiceRequest request = new InvoiceDtos.GenerateInvoiceRequest(1L, "2026-06",
-                new BigDecimal("99"), new BigDecimal("25"), new BigDecimal("3500"), new BigDecimal("15000"), new BigDecimal("0"));
+    @DisplayName("F2_TC01 calculateTotalAmount normal usage should calculate total correctly")
+    void F2_TC01_normalUsage_shouldCalculateTotalCorrectly() {
+        Invoice invoice = invoiceWithPreviousReadings("100", "20", "2500000");
 
-        BusinessException ex = assertThrows(BusinessException.class, () -> invoiceService.generate(request));
+        invoiceService.calculateTotalAmount(
+                invoice,
+                bd("150"),
+                bd("30"),
+                bd("3500"),
+                bd("15000"),
+                bd("100000")
+        );
+
+        assertAll(
+                () -> assertEquals(bd("150"), invoice.getCurrentElectricityReading()),
+                () -> assertEquals(bd("30"), invoice.getCurrentWaterReading()),
+                () -> assertEquals(bd("2500000"), invoice.getRoomFee()),
+                () -> assertEquals(bd("175000.00"), invoice.getElectricityCost()),
+                () -> assertEquals(bd("150000.00"), invoice.getWaterCost()),
+                () -> assertEquals(bd("2925000.00"), invoice.getTotalAmount())
+        );
+        verifyNoInteractions(invoiceRepository, contractService);
+    }
+
+    @Test
+    @DisplayName("F2_TC02 calculateTotalAmount zero utility usage should return only room fee and other services")
+    void F2_TC02_zeroUsage_shouldReturnRoomFeeAndOtherServices() {
+        Invoice invoice = invoiceWithPreviousReadings("100", "20", "2500000");
+
+        invoiceService.calculateTotalAmount(
+                invoice,
+                bd("100"),
+                bd("20"),
+                bd("3500"),
+                bd("15000"),
+                bd("0")
+        );
+
+        assertAll(
+                () -> assertEquals(bd("0.00"), invoice.getElectricityCost()),
+                () -> assertEquals(bd("0.00"), invoice.getWaterCost()),
+                () -> assertEquals(bd("2500000.00"), invoice.getTotalAmount())
+        );
+        verifyNoInteractions(invoiceRepository, contractService);
+    }
+
+    @Test
+    @DisplayName("F2_TC03 calculateTotalAmount very large usage should still calculate correctly")
+    void F2_TC03_largeUsage_shouldCalculateTotalCorrectly() {
+        Invoice invoice = invoiceWithPreviousReadings("0", "0", "3000000");
+
+        invoiceService.calculateTotalAmount(
+                invoice,
+                bd("10000"),
+                bd("1000"),
+                bd("3500"),
+                bd("15000"),
+                bd("0")
+        );
+
+        assertAll(
+                () -> assertEquals(bd("35000000.00"), invoice.getElectricityCost()),
+                () -> assertEquals(bd("15000000.00"), invoice.getWaterCost()),
+                () -> assertEquals(bd("53000000.00"), invoice.getTotalAmount())
+        );
+        verifyNoInteractions(invoiceRepository, contractService);
+    }
+
+    @Test
+    @DisplayName("F2_TC04 calculateTotalAmount lower electricity reading should throw exception")
+    void F2_TC04_lowerElectricityReading_shouldThrowException() {
+        Invoice invoice = invoiceWithPreviousReadings("100", "20", "2500000");
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                invoiceService.calculateTotalAmount(
+                        invoice,
+                        bd("99"),
+                        bd("25"),
+                        bd("3500"),
+                        bd("15000"),
+                        bd("0")
+                )
+        );
 
         assertEquals("New electricity reading cannot be lower than previous reading.", ex.getMessage());
+        verifyNoInteractions(invoiceRepository, contractService);
     }
 
-    private RentalContract activeContract() {
-        Room room = new Room(); room.setId(1L); room.setRoomCode("R101"); room.setBasePrice(new BigDecimal("2500000")); room.setStatus(RoomStatus.OCCUPIED);
-        com.rrms.domain.entity.Tenant tenant = new com.rrms.domain.entity.Tenant(); tenant.setFullName("An");
-        RentalContract contract = new RentalContract(); contract.setId(1L); contract.setRoom(room); contract.setTenant(tenant); contract.setStatus(ContractStatus.ACTIVE); contract.setInitialElectricityReading(new BigDecimal("100")); contract.setInitialWaterReading(new BigDecimal("20")); return contract;
+    @Test
+    @DisplayName("F2_TC05 calculateTotalAmount lower water reading should throw exception")
+    void F2_TC05_lowerWaterReading_shouldThrowException() {
+        Invoice invoice = invoiceWithPreviousReadings("100", "20", "2500000");
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                invoiceService.calculateTotalAmount(
+                        invoice,
+                        bd("120"),
+                        bd("19"),
+                        bd("3500"),
+                        bd("15000"),
+                        bd("0")
+                )
+        );
+
+        assertEquals("New water reading cannot be lower than previous reading.", ex.getMessage());
+        verifyNoInteractions(invoiceRepository, contractService);
+    }
+
+    @Test
+    @DisplayName("F2_TC06 calculateTotalAmount negative unit price should throw exception")
+    void F2_TC06_negativeUnitPrice_shouldThrowException() {
+        Invoice invoice = invoiceWithPreviousReadings("100", "20", "2500000");
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                invoiceService.calculateTotalAmount(
+                        invoice,
+                        bd("120"),
+                        bd("25"),
+                        bd("-1"),
+                        bd("15000"),
+                        bd("0")
+                )
+        );
+
+        assertEquals("Unit prices and other services cannot be negative.", ex.getMessage());
+        verifyNoInteractions(invoiceRepository, contractService);
+    }
+
+    @Test
+    @DisplayName("F2_TC07 calculateTotalAmount negative other services should throw exception")
+    void F2_TC07_negativeOtherServices_shouldThrowException() {
+        Invoice invoice = invoiceWithPreviousReadings("100", "20", "2500000");
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                invoiceService.calculateTotalAmount(
+                        invoice,
+                        bd("120"),
+                        bd("25"),
+                        bd("3500"),
+                        bd("15000"),
+                        bd("-1000")
+                )
+        );
+
+        assertEquals("Unit prices and other services cannot be negative.", ex.getMessage());
+        verifyNoInteractions(invoiceRepository, contractService);
+    }
+
+    private Invoice invoiceWithPreviousReadings(String previousElectricity, String previousWater, String basePrice) {
+        Room room = new Room();
+        room.setId(1L);
+        room.setRoomCode("A101");
+        room.setBasePrice(bd(basePrice));
+        room.setStatus(RoomStatus.OCCUPIED);
+
+        RentalContract contract = new RentalContract();
+        contract.setId(1L);
+        contract.setRoom(room);
+
+        Invoice invoice = new Invoice();
+        invoice.setContract(contract);
+        invoice.setPreviousElectricityReading(bd(previousElectricity));
+        invoice.setPreviousWaterReading(bd(previousWater));
+        return invoice;
+    }
+
+    private BigDecimal bd(String value) {
+        return new BigDecimal(value);
     }
 }
