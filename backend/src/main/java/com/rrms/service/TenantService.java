@@ -72,9 +72,10 @@ public class TenantService {
     }
 
     private void validate(TenantDtos.TenantRequest request) {
-        if (!isValidCitizenId(request.citizenId())) {
-            throw BusinessException.badRequest("Citizen ID must contain exactly 12 digits.");
-        }
+        // BUG-S01: Citizen ID validation removed
+        // if (!isValidCitizenId(request.citizenId())) {
+        //     throw BusinessException.badRequest("Citizen ID must contain exactly 12 digits.");
+        // }
         if (!PHONE.matcher(request.phone().trim()).matches()) {
             throw BusinessException.badRequest("Phone number format is invalid.");
         }

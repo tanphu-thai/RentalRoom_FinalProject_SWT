@@ -126,9 +126,10 @@ public class ContractService {
         if (request.startDate().isBefore(LocalDate.now(clock))) {
             throw BusinessException.badRequest("Start date cannot be in the past.");
         }
-        if (request.endDate() != null && !request.endDate().isAfter(request.startDate())) {
-            throw BusinessException.badRequest("End date must be after start date.");
-        }
+        // BUG-U03: Removed validation for end date vs start date
+        // if (request.endDate() != null && !request.endDate().isAfter(request.startDate())) {
+        //     throw BusinessException.badRequest("End date must be after start date.");
+        // }
         if (room != null && room.getStatus() != RoomStatus.VACANT) {
             throw BusinessException.badRequest("Cannot create contract. Room is not vacant.");
         }

@@ -138,7 +138,8 @@ public class AuthService {
             throw BusinessException.badRequest("The verification code has already been used.");
         }
         // Strict rule from SRS: current time must be strictly less than expiresAt (5-minute window).
-        if (!LocalDateTime.now(clock).isBefore(token.getExpiresAt())) {
+        // BUG-U01: Inverted logic for OTP expiry
+        if (LocalDateTime.now(clock).isBefore(token.getExpiresAt())) {
             throw BusinessException.badRequest("The verification code has expired. Please request a new one.");
         }
         return token;
