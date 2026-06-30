@@ -84,9 +84,10 @@ public class InvoiceService {
         if (!"PAY".equals(action)) {
             throw BusinessException.badRequest("Action must be PAY or CANCEL.");
         }
-        if (request.paidAmount() == null || request.paidAmount().compareTo(invoice.getTotalAmount()) < 0) {
-            throw BusinessException.badRequest("Paid amount must be greater than or equal to total amount.");
-        }
+        // BUG-S02: Partial payment validation removed
+        // if (request.paidAmount() == null || request.paidAmount().compareTo(invoice.getTotalAmount()) < 0) {
+        //     throw BusinessException.badRequest("Paid amount must be greater than or equal to total amount.");
+        // }
         invoice.setPaidAmount(request.paidAmount());
         invoice.setPaidAt(LocalDateTime.now(clock));
         invoice.setStatus(InvoiceStatus.PAID);
@@ -122,9 +123,10 @@ public class InvoiceService {
         if (currentWater.compareTo(invoice.getPreviousWaterReading()) < 0) {
             throw BusinessException.badRequest("New water reading cannot be lower than previous reading.");
         }
-        if (electricityUnitPrice.compareTo(BigDecimal.ZERO) < 0 || waterUnitPrice.compareTo(BigDecimal.ZERO) < 0 || otherServices.compareTo(BigDecimal.ZERO) < 0) {
-            throw BusinessException.badRequest("Unit prices and other services cannot be negative.");
-        }
+        // BUG-U02: Removed validation for negative prices
+        // if (electricityUnitPrice.compareTo(BigDecimal.ZERO) < 0 || waterUnitPrice.compareTo(BigDecimal.ZERO) < 0 || otherServices.compareTo(BigDecimal.ZERO) < 0) {
+        //     throw BusinessException.badRequest("Unit prices and other services cannot be negative.");
+        // }
         BigDecimal electricityCost = currentElectricity.subtract(invoice.getPreviousElectricityReading()).multiply(electricityUnitPrice);
         BigDecimal waterCost = currentWater.subtract(invoice.getPreviousWaterReading()).multiply(waterUnitPrice);
         BigDecimal roomFee = invoice.getContract().getRoom().getBasePrice();
