@@ -14,6 +14,14 @@ import { TenantPortal } from './pages/TenantPortal.jsx';
 import { Dashboard, RoomsPage, TenantsPage, ContractsPage, InvoicesPage, RevenuePage } from './pages/AdminPages.jsx';
 
 // Global notification state wrapper
+import { BackendStatus } from './components/ui/BackendStatus.jsx';
+
+export const NotifyContext = React.createContext();
+
+export function useNotify() {
+  return React.useContext(NotifyContext);
+}
+
 function GlobalNotifier({ children }) {
   const [notice, setNotice] = useState(null);
   const notify = (message, type = 'success') => {
@@ -22,14 +30,15 @@ function GlobalNotifier({ children }) {
   };
   
   return (
-    <>
-      <div className="fixed top-4 right-4 z-[9999] w-full max-w-sm pointer-events-none transition-all duration-300">
+    <NotifyContext.Provider value={notify}>
+      <div className="fixed bottom-4 right-4 z-[9999] w-full max-w-sm pointer-events-none transition-all duration-300">
         <div className="pointer-events-auto">
           <Alert notice={notice} onClose={() => setNotice(null)} />
         </div>
       </div>
-      {React.cloneElement(children, { notify })}
-    </>
+      <BackendStatus />
+      {children}
+    </NotifyContext.Provider>
   );
 }
 

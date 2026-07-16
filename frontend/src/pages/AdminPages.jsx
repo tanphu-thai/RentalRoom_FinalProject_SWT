@@ -4,6 +4,7 @@ import { Table } from '../components/ui/Table.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { Alert } from '../components/ui/Alert.jsx';
 import { Search, Plus, Edit, Trash2, CheckCircle2, XCircle, Clock, Building2, Users, Receipt, TrendingUp } from 'lucide-react';
+import { useNotify } from '../App.jsx';
 
 function money(value) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(value || 0));
@@ -61,7 +62,8 @@ export function Dashboard() {
 
 // ... other admin pages can be simplified by reusing the same structure
 const emptyRoom = { roomCode: '', roomType: 'Single', area: '', basePrice: '', status: 'VACANT' }
-export function RoomsPage({ notify }) {
+export function RoomsPage() {
+  const notify = useNotify();
   const [rooms, setRooms] = useState([]); const [q, setQ] = useState(''); const [status, setStatus] = useState(''); const [form, setForm] = useState(emptyRoom); const [editing, setEditing] = useState(null)
   const load = async () => { try { setRooms(await get(`/rooms?${status ? `status=${status}&` : ''}q=${encodeURIComponent(q)}`)) } catch (e) { notify(e.message, 'error') } }
   useEffect(() => { load() }, [status])
@@ -120,7 +122,8 @@ export function RoomsPage({ notify }) {
 // I will provide the rest of the Admin pages in the same file to keep it cohesive.
 
 const emptyTenant = { fullName: '', citizenId: '', phone: '', email: '' }
-export function TenantsPage({ notify }) {
+export function TenantsPage() {
+  const notify = useNotify();
   const [items, setItems] = useState([]); const [q, setQ] = useState(''); const [form, setForm] = useState(emptyTenant); const [editing, setEditing] = useState(null)
   const load = async () => { try { setItems(await get(`/tenants?q=${encodeURIComponent(q)}`)) } catch(e) { notify(e.message, 'error') } }
   useEffect(() => { load() }, [])
@@ -158,7 +161,8 @@ export function TenantsPage({ notify }) {
 }
 
 const emptyContract = { roomId: '', tenantId: '', depositAmount: '', startDate: new Date().toISOString().slice(0, 10), endDate: '', initialElectricityReading: '0', initialWaterReading: '0' }
-export function ContractsPage({ notify }) {
+export function ContractsPage() {
+  const notify = useNotify();
   const [contracts,setContracts]=useState([]);const [rooms,setRooms]=useState([]);const [tenants,setTenants]=useState([]);const [form,setForm]=useState(emptyContract)
   const load=async()=>{try{const [c,r,t]=await Promise.all([get('/contracts'),get('/rooms?status=VACANT'),get('/tenants')]);setContracts(c);setRooms(r);setTenants(t)}catch(e){notify(e.message,'error')}}
   useEffect(()=>{load()},[])
@@ -199,7 +203,8 @@ export function ContractsPage({ notify }) {
 }
 
 const emptyInvoice = { contractId: '', billingMonth: new Date().toISOString().slice(0, 7), currentElectricityReading: '', currentWaterReading: '', electricityUnitPrice: '3500', waterUnitPrice: '15000', otherServices: '150000' }
-export function InvoicesPage({ notify }) {
+export function InvoicesPage() {
+  const notify = useNotify();
   const [contracts,setContracts]=useState([]);const [items,setItems]=useState([]);const [form,setForm]=useState(emptyInvoice)
   const load=async()=>{try{const [c,i]=await Promise.all([get('/contracts?status=ACTIVE'),get('/invoices')]);setContracts(c);setItems(i)}catch(e){notify(e.message,'error')}}
   useEffect(()=>{load()},[])
@@ -240,7 +245,8 @@ export function InvoicesPage({ notify }) {
   )
 }
 
-export function RevenuePage({ notify }) {
+export function RevenuePage() {
+  const notify = useNotify();
   const [year,setYear]=useState(String(new Date().getFullYear()));const [month,setMonth]=useState('');const [data,setData]=useState(null)
   const load=async()=>{try{setData(await get(`/revenue?year=${year}${month?`&month=${month}`:''}`))}catch(e){notify(e.message,'error')}}
   useEffect(()=>{load()},[])
