@@ -1,21 +1,27 @@
-
-
 package com.rrms.service;
 
+import com.rrms.repository.RentalContractRepository;
+import com.rrms.repository.TenantRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class TenantServiceTest {
 
-    @Autowired
+    @Mock
+    private TenantRepository tenantRepository;
+
+    @Mock
+    private RentalContractRepository contractRepository;
+
+    @InjectMocks
     private TenantService tenantService;
-
-
-
 
     // UTCID01: Input là null (Abnormal)
     @Test
