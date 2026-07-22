@@ -1,0 +1,4 @@
+com\rrms\service\ContractServiceTest.class
+com\rrms\service\InvoiceServiceTest.class
+com\rrms\service\AuthServiceTest.class
+com\rrms\service\TenantServiceTest.class

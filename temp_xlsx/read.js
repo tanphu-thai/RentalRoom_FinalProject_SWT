@@ -1,0 +1,1 @@
+const XLSX = require('xlsx'); ['../docs/Lab1-WritingTestCase_Group3.xls', '../docs/Lab2_UnitTestCase_Group3.xls'].forEach(f => { console.log('FILE: ' + f); try { const wb = XLSX.readFile(f); wb.SheetNames.forEach(s => { console.log('SHEET: ' + s); console.log(XLSX.utils.sheet_to_csv(wb.Sheets[s]).substring(0, 2500)); }) } catch (e) { console.error(e); } })

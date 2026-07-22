@@ -1,0 +1,5 @@
+# Created at 2026-07-22T23:32:03.050
+Boot Manifest-JAR contains absolute paths in classpath 'D:\SE\Sem5\SWT301\PROJECT\RentalRoomProject_Code\RentalRoomLabProject\RentalRoom_FinalProject_SWT\backend\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

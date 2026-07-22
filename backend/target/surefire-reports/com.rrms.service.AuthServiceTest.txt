@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------------
+Test set: com.rrms.service.AuthServiceTest
+-------------------------------------------------------------------------------
+Tests run: 15, Failures: 1, Errors: 3, Skipped: 0, Time elapsed: 0.817 s <<< FAILURE! -- in com.rrms.service.AuthServiceTest
+com.rrms.service.AuthServiceTest.testValidateOTP_UTCID02_Normal_ValidOtp_1MinRemaining -- Time elapsed: 0.727 s <<< ERROR!
+com.rrms.common.BusinessException: The verification code has expired. Please request a new one.
+	at com.rrms.common.BusinessException.badRequest(BusinessException.java:16)
+	at com.rrms.service.AuthService.validateOTP(AuthService.java:143)
+	at com.rrms.service.AuthServiceTest.testValidateOTP_UTCID02_Normal_ValidOtp_1MinRemaining(AuthServiceTest.java:86)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+
+com.rrms.service.AuthServiceTest.testValidateOTP_UTCID07_Boundary_OtpExactExpiry -- Time elapsed: 0.005 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected com.rrms.common.BusinessException to be thrown, but nothing was thrown.
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3128)
+	at com.rrms.service.AuthServiceTest.testValidateOTP_UTCID07_Boundary_OtpExactExpiry(AuthServiceTest.java:126)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+
+com.rrms.service.AuthServiceTest.testValidateOTP_UTCID06_Boundary_ValidOtp_1SecRemaining -- Time elapsed: 0.004 s <<< ERROR!
+com.rrms.common.BusinessException: The verification code has expired. Please request a new one.
+	at com.rrms.common.BusinessException.badRequest(BusinessException.java:16)
+	at com.rrms.service.AuthService.validateOTP(AuthService.java:143)
+	at com.rrms.service.AuthServiceTest.testValidateOTP_UTCID06_Boundary_ValidOtp_1SecRemaining(AuthServiceTest.java:118)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+
+com.rrms.service.AuthServiceTest.testValidateOTP_UTCID01_Normal_ValidOtp_4MinsRemaining -- Time elapsed: 0.003 s <<< ERROR!
+com.rrms.common.BusinessException: The verification code has expired. Please request a new one.
+	at com.rrms.common.BusinessException.badRequest(BusinessException.java:16)
+	at com.rrms.service.AuthService.validateOTP(AuthService.java:143)
+	at com.rrms.service.AuthServiceTest.testValidateOTP_UTCID01_Normal_ValidOtp_4MinsRemaining(AuthServiceTest.java:76)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+

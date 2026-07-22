@@ -1,0 +1,11 @@
+# Optional SQL Server profile. Fill in your local credentials before using it.
+# Run with: --spring.profiles.active=sqlserver
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=RRMS;encrypt=true;trustServerCertificate=true
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: sa
+    password: YOUR_SQL_SERVER_PASSWORD
+  jpa:
+    hibernate:
+      ddl-auto: update
