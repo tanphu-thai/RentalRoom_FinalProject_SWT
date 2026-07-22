@@ -60,7 +60,7 @@ export function AdminLayout({ user, onLogout }) {
         {/* Topbar */}
         <header className="h-20 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-sm flex items-center justify-between px-8 z-0">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Admin Portal</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Admin Portal <span className="text-green-500">(Happy)</span></h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Welcome back, {user?.username || 'Admin'}</p>
           </div>
           
