@@ -220,14 +220,14 @@ export function InvoicesPage() {
           <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Active Contract</label><select required className="input-field" value={form.contractId} onChange={e=>setForm({...form,contractId:e.target.value})}><option value="">Select contract</option>{contracts.map(c=><option key={c.id} value={c.id}>{c.roomCode} — {c.tenantName}</option>)}</select></div>
           <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Billing Month</label><input required type="month" className="input-field" value={form.billingMonth} onChange={e=>setForm({...form,billingMonth:e.target.value})}/></div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Curr. Elect.</label><input required type="number" className="input-field" value={form.currentElectricityReading} onChange={e=>setForm({...form,currentElectricityReading:e.target.value})}/></div>
-            <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Curr. Water</label><input required type="number" className="input-field" value={form.currentWaterReading} onChange={e=>setForm({...form,currentWaterReading:e.target.value})}/></div>
+            <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Current Electricity (Số điện hiện tại)</label><input required type="number" className="input-field" value={form.currentElectricityReading} onChange={e=>setForm({...form,currentElectricityReading:e.target.value})}/></div>
+            <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Current Water (Số nước hiện tại)</label><input required type="number" className="input-field" value={form.currentWaterReading} onChange={e=>setForm({...form,currentWaterReading:e.target.value})}/></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Elect. Price</label><input required type="number" className="input-field" value={form.electricityUnitPrice} onChange={e=>setForm({...form,electricityUnitPrice:e.target.value})}/></div>
-            <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Water Price</label><input required type="number" className="input-field" value={form.waterUnitPrice} onChange={e=>setForm({...form,waterUnitPrice:e.target.value})}/></div>
+            <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Electricity Price (Đơn giá điện)</label><input required type="number" className="input-field" value={form.electricityUnitPrice} onChange={e=>setForm({...form,electricityUnitPrice:e.target.value})}/></div>
+            <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Water Price (Đơn giá nước)</label><input required type="number" className="input-field" value={form.waterUnitPrice} onChange={e=>setForm({...form,waterUnitPrice:e.target.value})}/></div>
           </div>
-          <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Other Services</label><input required type="number" className="input-field" value={form.otherServices} onChange={e=>setForm({...form,otherServices:e.target.value})}/></div>
+          <div className="flex flex-col gap-1.5"><label className="text-sm font-semibold">Other Services Fee (Phí dịch vụ khác)</label><input required type="number" className="input-field" value={form.otherServices} onChange={e=>setForm({...form,otherServices:e.target.value})}/></div>
           <Button type="submit" className="mt-2 w-full"><Plus size={16} className="mr-2"/> Generate Invoice</Button>
         </form>
       </div>
