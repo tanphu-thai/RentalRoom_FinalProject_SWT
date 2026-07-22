@@ -95,13 +95,7 @@ export function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
-        <div className="relative z-10">
-          <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">⚠ Bug Branch — feature/lab4-bugs</h2>
-          <p className="opacity-90 max-w-2xl">This branch intentionally contains input validation bugs (DEF_SYS_001 ~ DEF_SYS_004). Invalid data can be submitted without any error messages.</p>
-        </div>
-        <TrendingUp className="absolute right-0 bottom-0 opacity-10 w-48 h-48 -mr-8 -mb-8" />
-      </div>
+
     </div>
   );
 }
