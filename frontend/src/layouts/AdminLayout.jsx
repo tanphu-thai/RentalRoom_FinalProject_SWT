@@ -1,7 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Bed, Users, FileText, Receipt, LineChart, LogOut } from 'lucide-react';
+import { LayoutDashboard, Bed, Users, FileText, Receipt, LineChart, LogOut, Wifi, WifiOff, Loader2 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle.jsx';
+import { get } from '../api.js';
+
+// ── Backend Status Banner (BUG BRANCH - No validation notice) ─────────────────
+function BackendStatusBanner() {
+  const [status, setStatus] = useState('checking');
+
+  useEffect(() => {
+    let isMounted = true;
+    const check = async () => {
+      try {
+        await get('/rooms?q=&status=');
+        if (isMounted) setStatus('online');
+      } catch {
+        if (isMounted) setStatus('offline');
+      }
+    };
+    check();
+    const interval = setInterval(check, 15000);
+    return () => { isMounted = false; clearInterval(interval); };
+  }, []);
+
+  if (status === 'checking') {
+    return (
+      <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mb-6 text-sm font-medium text-slate-500">
+        <Loader2 size={18} className="animate-spin text-blue-500" />
+        <span>Checking backend connection...</span>
+      </div>
+    );
+  }
+
+  if (status === 'online') {
+    return (
+      <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 mb-6 text-sm font-semibold text-yellow-700 dark:text-yellow-400">
+        <Wifi size={18} />
+        <span>Backend Connected — Spring Boot API is running on <code className="font-mono text-xs bg-yellow-100 dark:bg-yellow-900/40 px-1.5 py-0.5 rounded">localhost:8080</code></span>
+        <span className="ml-auto text-yellow-600 text-xs font-normal">⚠ DEF_SYS_001: No Input Validation — Bug Branch</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 mb-6 text-sm font-semibold text-red-700 dark:text-red-400">
+      <WifiOff size={18} />
+      <span>Backend Offline — Cannot reach Spring Boot API on <code className="font-mono text-xs bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded">localhost:8080</code></span>
+      <span className="ml-auto text-red-500 text-xs font-normal">Please start the backend server.</span>
+    </div>
+  );
+}
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -75,6 +123,7 @@ export function AdminLayout({ user, onLogout }) {
 
         {/* Page Content */}
         <div className="flex-1 overflow-auto p-8">
+          <BackendStatusBanner />
           <Outlet />
         </div>
       </main>
