@@ -18,7 +18,7 @@ function StatusBadge({ status }) {
   return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">{s}</span>;
 }
 
-// ── Backend Status Banner (BUG BRANCH - No validation notice) ─────────────────
+// ── Backend Status Banner (MAIN BRANCH - Happy Path) ─────────────────
 function BackendStatusBanner() {
   const [status, setStatus] = useState('checking');
 
@@ -48,10 +48,10 @@ function BackendStatusBanner() {
 
   if (status === 'online') {
     return (
-      <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 mb-6 text-sm font-semibold text-yellow-700 dark:text-yellow-400">
+      <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-6 text-sm font-semibold text-green-700 dark:text-green-400">
         <Wifi size={18} />
-        <span>Backend Connected — Spring Boot API is running on <code className="font-mono text-xs bg-yellow-100 dark:bg-yellow-900/40 px-1.5 py-0.5 rounded">localhost:8080</code></span>
-        <span className="ml-auto text-yellow-600 text-xs font-normal">⚠ DEF_SYS_001: No Input Validation — Bug Branch</span>
+        <span>Backend Connected — Spring Boot API is running on <code className="font-mono text-xs bg-green-100 dark:bg-green-900/40 px-1.5 py-0.5 rounded">localhost:8080</code></span>
+        <span className="ml-auto text-green-600 text-xs font-normal">✓ Stable Branch — Main (Happy)</span>
       </div>
     );
   }
