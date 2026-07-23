@@ -42,13 +42,7 @@ function BackendStatusBanner() {
     );
   }
 
-  return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 mb-6 text-sm font-semibold text-red-700 dark:text-red-400">
-      <WifiOff size={18} />
-      <span>Backend Offline — Cannot reach Spring Boot API on <code className="font-mono text-xs bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded">localhost:8080</code></span>
-      <span className="ml-auto text-red-500 text-xs font-normal">Please start the backend server.</span>
-    </div>
-  );
+  return null;
 }
 
 const navItems = [
