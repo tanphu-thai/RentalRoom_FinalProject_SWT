@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { post } from './api.js';
@@ -13,6 +13,9 @@ import { LoginScreen } from './pages/Login.jsx';
 import { TenantPortal } from './pages/TenantPortal.jsx';
 import { Dashboard, RoomsPage, TenantsPage, ContractsPage, InvoicesPage, RevenuePage } from './pages/AdminPages.jsx';
 
+export const NotifyContext = createContext(null);
+export function useNotify() { return useContext(NotifyContext); }
+
 // Global notification state wrapper
 function GlobalNotifier({ children }) {
   const [notice, setNotice] = useState(null);
@@ -22,14 +25,14 @@ function GlobalNotifier({ children }) {
   };
   
   return (
-    <>
+    <NotifyContext.Provider value={notify}>
       <div className="fixed top-4 right-4 z-[9999] w-full max-w-sm pointer-events-none transition-all duration-300">
         <div className="pointer-events-auto">
           <Alert notice={notice} onClose={() => setNotice(null)} />
         </div>
       </div>
-      {React.cloneElement(children, { notify })}
-    </>
+      {children}
+    </NotifyContext.Provider>
   );
 }
 
