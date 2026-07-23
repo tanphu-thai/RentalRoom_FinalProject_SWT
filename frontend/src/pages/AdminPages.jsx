@@ -18,57 +18,12 @@ function StatusBadge({ status }) {
   return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">{s}</span>;
 }
 
-// ── Backend Status Banner (MAIN BRANCH - Happy Path) ─────────────────
-function BackendStatusBanner() {
-  const [status, setStatus] = useState('checking');
 
-  useEffect(() => {
-    let isMounted = true;
-    const check = async () => {
-      try {
-        await get('/rooms?q=&status=');
-        if (isMounted) setStatus('online');
-      } catch {
-        if (isMounted) setStatus('offline');
-      }
-    };
-    check();
-    const interval = setInterval(check, 15000);
-    return () => { isMounted = false; clearInterval(interval); };
-  }, []);
-
-  if (status === 'checking') {
-    return (
-      <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mb-6 text-sm font-medium text-slate-500">
-        <Loader2 size={18} className="animate-spin text-blue-500" />
-        <span>Checking backend connection...</span>
-      </div>
-    );
-  }
-
-  if (status === 'online') {
-    return (
-      <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-6 text-sm font-semibold text-green-700 dark:text-green-400">
-        <Wifi size={18} />
-        <span>Backend Connected — Spring Boot API is running on <code className="font-mono text-xs bg-green-100 dark:bg-green-900/40 px-1.5 py-0.5 rounded">localhost:8080</code></span>
-        <span className="ml-auto text-green-600 text-xs font-normal">✓ Stable Branch — Main (Happy)</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 mb-6 text-sm font-semibold text-red-700 dark:text-red-400">
-      <WifiOff size={18} />
-      <span>Backend Offline — Cannot reach Spring Boot API on <code className="font-mono text-xs bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded">localhost:8080</code></span>
-      <span className="ml-auto text-red-500 text-xs font-normal">Please start the backend server.</span>
-    </div>
-  );
-}
 
 export function Dashboard() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <BackendStatusBanner />
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-start gap-4">
           <div className="p-3 bg-blue-100 text-blue-600 rounded-xl dark:bg-blue-900/30 dark:text-blue-400"><Building2 size={24}/></div>
@@ -112,7 +67,7 @@ export function RoomsPage({ notify }) {
 
   return (
     <div className="space-y-4 animate-in fade-in duration-500">
-      <BackendStatusBanner />
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         <div className="xl:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
           <div className="flex justify-between items-center mb-6">
@@ -172,7 +127,7 @@ export function TenantsPage({ notify }) {
 
   return (
     <div className="space-y-4 animate-in fade-in duration-500">
-      <BackendStatusBanner />
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         <div className="xl:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
           <div className="flex justify-between items-center mb-6"><h2 className="text-lg font-bold">{editing ? 'Edit Tenant' : 'Add Tenant'}</h2><Button variant="secondary" onClick={()=>{setEditing(null);setForm(emptyTenant)}} className="h-8 px-3 text-xs">Clear</Button></div>
@@ -214,7 +169,7 @@ export function ContractsPage({ notify }) {
 
   return (
     <div className="space-y-4 animate-in fade-in duration-500">
-      <BackendStatusBanner />
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         <div className="xl:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
           <h2 className="text-lg font-bold mb-6">Create Rental Contract</h2>
@@ -261,7 +216,7 @@ export function InvoicesPage({ notify }) {
 
   return (
     <div className="space-y-4 animate-in fade-in duration-500">
-      <BackendStatusBanner />
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         <div className="xl:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
           <h2 className="text-lg font-bold mb-6">Generate Invoice</h2>
@@ -301,7 +256,7 @@ export function RevenuePage({ notify }) {
   useEffect(()=>{load()},[])
   return (
     <div className="space-y-4 animate-in fade-in duration-500">
-      <BackendStatusBanner />
+
       <div className="max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
           <h2 className="text-xl font-bold flex items-center gap-2"><TrendingUp/> Revenue Statistics</h2>
